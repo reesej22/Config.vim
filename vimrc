@@ -12,7 +12,17 @@
 "============================================================================="
 "                                  Options:                                   "
 "============================================================================="
-runtime! defaults.vim
+" Load the defaults.vim if it is available
+if exists(':runtime') && filereadable(expand('$VIMRUNTIME/defaults.vim'))
+    runtime! defaults.vim
+endif
+
+" Use Vim settings, rather than Vi settings (much better!). This must be first,
+" because it changes other options as a side effect. Avoid side effects when it
+" was already reset.
+if &compatible
+  set nocompatible
+endif
 
 " If you have Hack Nerd Font installed on you system set has_nerd_font to true.
 " This will add symbols and icons to the statusline, listchars, and fillchars.
@@ -29,32 +39,30 @@ if &t_Co > 2 || has("gui_running")
   " Revert with ":syntax off".
   syntax on
   " Set the colorscheme
-  colorscheme retrobox
+  colorscheme habamax
   " I like highlighting strings inside C comments.
-  " Revert with ":unlet c_comment_strings".
   let c_comment_strings=1
 endif
 
-" if xterm-compatible, use at least 256 colors
-if &term =~ 'xterm-256color'
-  if &t_Co == 8
-    set t_Co = 256
+" If not running in a gui, use at least 256 colors.
+if !has("gui_running")
+  " Check if terminal supports 256 colors
+  if &term == 'win32' || &term == 'ansi'
+    if &t_Co < 256
+      set t_Co=256
+    endif
+    " Enable true color support if available
+    if has("termguicolors")
+      set termguicolors
+    endif
   endif
-  set termguicolors
-endif
-
-" Use Vim settings, rather than Vi settings (much better!). This must be first,
-" because it changes other options as a side effect. Avoid side effects when it
-" was already reset.
-if &compatible
-  set nocompatible
 endif
 
 " Use the system clipboard if available. This option is a list of
 " comma-seperated names. Do not use += or -= for this option. Some of the
 " Possible options: unnamed, unnamedplus, autoselect, autoselectplus, html
 if has('clipboard')
-  set clipboard^=unnamed
+  set clipboard^=autoselectplus
 endif
 
 " In many terminal emulators the mouse works just fine. By enabling it you can
@@ -139,9 +147,29 @@ set splitbelow
 " confusing.
 set nrformats-=octal
 
+" When on, lines longer than the width of the window will wrap and displaying
+" continues on the next line.
+set wrap
+
+" Maximum width of text that is being inserted.
+set textwidth=80
+
+" This is a sequence of letters which describes how automatic formatting is to
+" be done. See ":help fo-table" for additional options.
+set formatoptions+=t
+
+" A comma-separated list of screen columns that are highlighted with
+" ColorColumn. Useful to aligh text. Can make screen redrawing slower.
+" Will only work if compiled with syntax.
+if has('syntax')
+  " set the first column width, I personally like 80
+  set colorcolumn=80
+  highlight ColorColumn ctermbg=DarkGrey guibg=antiquewhite4
+endif
+
 " Changes the way text is displayed. This can be a comma-separated list of
 " flags: lastline, truncate, uhex
-set display=truncate
+set display=lastline
 
 " By default when 'display=truncate', @@@ will be displayed in the first
 " line to indicate that the text has been truncated. These characters can
@@ -162,15 +190,6 @@ if has_nerd_font
   set listchars=tab:»·,trail:·,extends:,precedes:,nbsp:␣
 else
   set listchars=tab:>-,trail:·,extends:>,precedes:<,nbsp:_
-endif
-
-" A comma-separated list of screen columns that are highlighted with
-" ColorColumn. Useful to aligh text. Can make screen redrawing slower.
-" Will only work if compiled with syntax.
-if has('syntax')
-  " set the first column width, I personally like 80
-  set colorcolumn=80
-  highlight ColorColumn ctermbg=DarkGrey guibg=antiquewhite4
 endif
 
 if has('statusline')
