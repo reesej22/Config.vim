@@ -13,197 +13,121 @@
 "                                  Options:                                   "
 "============================================================================="
 " Load the defaults.vim if it is available
-if exists(':runtime') && filereadable(expand('$VIMRUNTIME/defaults.vim'))
-    runtime! defaults.vim
+if filereadable(expand('$VIMRUNTIME/defaults.vim'))
+  unlet! skip_defaults_vim
+  runtime! defaults.vim
 endif
 
-" Use Vim settings, rather than Vi settings (much better!). This must be first,
-" because it changes other options as a side effect. Avoid side effects when it
-" was already reset.
-if &compatible
-  set nocompatible
+let has_nerd_font = v:true  " enable nerd font symbols and icons
+
+set encoding=utf-8          " default character encoding used inside vim
+set termencoding=utf-8      " character encoding used for the terminal
+set fileencoding=utf-8      " the character encoding used in the buffer
+
+if &t_Co > 2                " If terminal supports color:
+  syntax on                 " enable syntax highlighting
+  colorscheme retrobox      " set colorscheme
+  set hlsearch              " highlight search results
+  let c_comment_strings=1   " highlight strings inside of comments.
 endif
 
-" If you have Hack Nerd Font installed on you system set has_nerd_font to true.
-" This will add symbols and icons to the statusline, listchars, and fillchars.
-let has_nerd_font = v:true
-
-" Set the character encoding used inside of Vim.
-set encoding=utf-8
-set termencoding=utf-8
-set fileencoding=utf-8
-
-" Switch syntax highlighting on when the terminal has colors or when using the
-" GUI (which always has colors).
-if &t_Co > 2 || has("gui_running")
-  " Revert with ":syntax off".
-  syntax on
-  " Set the colorscheme
-  colorscheme habamax
-  " I like highlighting strings inside C comments.
-  let c_comment_strings=1
+if has('clipboard')         " if available, use sys clipboard
+  set clipboard=autoselectplus
 endif
 
-" If not running in a gui, use at least 256 colors.
-if !has("gui_running")
-  " Check if terminal supports 256 colors
-  if &term == 'win32' || &term == 'ansi'
-    if &t_Co < 256
-      set t_Co=256
-    endif
-    " Enable true color support if available
-    if has("termguicolors")
-      set termguicolors
-    endif
-  endif
-endif
-
-" Use the system clipboard if available. This option is a list of
-" comma-seperated names. Do not use += or -= for this option. Some of the
-" Possible options: unnamed, unnamedplus, autoselect, autoselectplus, html
-if has('clipboard')
-  set clipboard^=autoselectplus
-endif
-
-" In many terminal emulators the mouse works just fine. By enabling it you can
-" position the cursor, Visually select and scroll with the mouse. Only xterm
-" can grab the mouse events when using the shift key, for other terminals
-" use ":", select text and press Esc.
 if has('mouse')
-  if &term =~ 'xterm'
-    set mouse=a
-  else
-    set mouse=nvi
-  endif
+  set mouse=a               " if available, enable all mouse functionality
 endif
 
-" Use visual error bells, instead of audible. To turn off visual use:
-" set t_vt=
-set visualbell
+set noerrorbells            " turn off errorbells
 
-" automatically sets options from from the modeline (" vim: ts=2 sw=2 et)
-set modeline
+set vb t_vb=                " turn of visual error bells
 
-" Use a dialog when an operation has to be confirmed.
-" confirm can take args: q, aq, w (set confirm q)
-set confirm
+set modeline                " auto set options with (" vim: ts=2 sw=2 et)
 
-" When off a buffer is unloaded when it is abandoned. When on a buffer
-" becomes hidden when it is abandoned.
-set hidden
+set confirm                 " use a dialog instead of error
 
-set ruler             " show the cursor position all the time
-set showcmd           " display incomplete commands
+set hidden                  " buffers becomes hidden when abandoned.
 
-set showmatch         " automatically show matching brackets
+set showmatch               " automatically show matching brackets
 
-set ttimeout          " time out for key codes
-set ttimeoutlen=100   " wait up to 100ms after Esc for special key
+set ttimeout                " time out for key codes
+set ttimeoutlen=100         " wait up to 100ms after Esc for special key
 
-set number            " show line numbers
+set path=.,./.,**           " expand the path of the find command
 
-set path=.,./.,**     " expand the path of the find command
+set nu relativenumber       " user relative line numbers
 
-" Show the line number relative to the line with the cursor in front of
-" each line. Relative line numbers help you use the count you can
-" precede some vertical motion commands.
-set relativenumber
+set tabstop=4               " defines the column multiple used for a Tab
+set softtabstop=4           " soft tabs are used in Insert mode over tabs
+set shiftwidth=4            " number of spaced that make up an anto-indent
+set expandtab               " use spaces instead of tabs
+set autoindent              " copy indent from current line
+set smartindent             " like cindent, only better in most cases
 
-" Set default tab spacing and indentation
-set tabstop=4       " defines the column multiple used to display a Tab
-set softtabstop=4   " soft tabs are used in Insert mode instead of Tabs
-set shiftwidth=4    " number of spaced that make up an anto-indent
-set expandtab       " use spaces instead of tabs
-set autoindent      " copy indent from current line
-set smartindent     " like cindent, only better in most cases
+set ignorecase              " ignore case in search patterns
+set smartcase               " override 'ignorecase' if capital letters
 
-" Search setting
-set ignorecase      " ignore case in search patterns
-set smartcase       " override 'ignorecase' if capital letters are used
-
-" if Vim has color support, switch on highlighting for search patterns.
-if &t_Co > 2 || has("gui_running")
-  set hlsearch
-endif
-
-" Do incremental searching when it's possible to timeout.
 if has('reltime')
-  set incsearch
+  set incsearch             " if available, do incremental searching
 endif
 
-" Show a few lines of context around the cursor.  Note that this makes the
-" text scroll if you mouse-click near the start or end of the window.
-set scrolloff=10
+set splitright              " vsplit: new window to the right
+set splitbelow              " split: new window below
 
-" When on, splitting a window will put the new window right of the
-" current one. :vsplit
-set splitright
+set nrformats-=octal        " <C-a> & <C-x> do not recognize octal numbers
 
-" When on, splitting a window will put the new window below the current
-" one. :split
-set splitbelow
+set scrolloff=10            " Number of lines around the cursor
 
-" Do not recognize octal numbers for Ctrl-A and Ctrl-X, most users find it
-" confusing.
-set nrformats-=octal
+set wrap                    " break long lines of text
 
-" When on, lines longer than the width of the window will wrap and displaying
-" continues on the next line.
-set wrap
+set textwidth=80            " max width of text
 
-" Maximum width of text that is being inserted.
-set textwidth=80
+set formatoptions+=t        " automatic formatting options ":help fo-table"
 
-" This is a sequence of letters which describes how automatic formatting is to
-" be done. See ":help fo-table" for additional options.
-set formatoptions+=t
-
-" A comma-separated list of screen columns that are highlighted with
-" ColorColumn. Useful to aligh text. Can make screen redrawing slower.
-" Will only work if compiled with syntax.
-if has('syntax')
-  " set the first column width, I personally like 80
-  set colorcolumn=80
+if has('syntax')            " if available
+  set colorcolumn=80        " set the column width, and color
   highlight ColorColumn ctermbg=DarkGrey guibg=antiquewhite4
 endif
 
-" Changes the way text is displayed. This can be a comma-separated list of
-" flags: lastline, truncate, uhex
-set display=lastline
-
-" By default when 'display=truncate', @@@ will be displayed in the first
-" line to indicate that the text has been truncated. These characters can
-" be changed with 'fillchars'.
+set display=lastline        " change the way text is displayed
 if has_nerd_font
   set fillchars+=vert:│,trunc:,foldopen:,foldclose:,lastline:↲
 else
-  set fillchars+=vert:│,trunc:>,lastline:@
+  set fillchars+=vert:│,trunc:>,foldopen:-,foldclosed:+,lastline:@
 endif
 
-" Useful to see the difference between tabs and spaces and for trailing blanks.
-" Further changed by the 'listchars option.
-set list
-
-" Strings to use in 'list' mode and for the :list command. It is a
-" comma-separated list of string settings.
+set list                    " display whitespace using characters
 if has_nerd_font
   set listchars=tab:»·,trail:·,extends:,precedes:,nbsp:␣
 else
   set listchars=tab:>-,trail:·,extends:>,precedes:<,nbsp:_
 endif
 
-if has('statusline')
-  " The value of this option influences when the last window will have a
-  " statusline: 0 -> never, 1 -> only when two windows, 2 -> always
-  set laststatus=2
+"============================================================================="
+"                                 StatusLine:                                 "
+"============================================================================="
+if has('statusline')        " if available
+  set laststatus=2          " display statusline always
+  set ruler                 " show the cursor position all the time
+  set showcmd               " display incomplete commands
 
   " Setup custom statusline. See :help 'statusline' for more details.
-  " Nerd font will provide support for better symbols.
   if has_nerd_font
-    set statusline=%#StatusLine#%<\ \ %f\ %h%w%m%r\ %=%#StatusLineNC#\
-      \%l\ ☰\ %c\ ⮞\ %V\ │\ %P
+    set statusline=%#StatusLine#%<\|\ \ %f\ %h%w%m%r
+    set statusline+=%=%#StatusLineNC#\ \ %l\:\%c\ 󰈙\ %P\|
   else
-    set statusline=%<%f\ %h%w%m%r%=%-14.(%l,%c%V%)\ %P
+    set statusline=%#StatusLine#%<\|\ %f\ %h%w%m%r
+    set statusline+=%=%#StatusLineNC#\ %l\:\%c\ %P\|
+  endif
+
+  " Statusline colors
+  if has('gui_running')
+    highlight StatusLine guibg=black guifg=blanchedalmond
+    highlight StatusLineNC guibg=black guifg=darkcyan
+  else
+    highlight StatusLine ctermbg=DarkGrey ctermfg=Black
+    highlight StatusLineNC ctermbg=DarkBlue ctermfg=Black
   endif
 endif
 
@@ -285,15 +209,11 @@ nmap <leader>d <Cmd>close<Cr>
 set pastetoggle=<F2>
 
 "============================================================================="
-"                      Eval Features And Native Plugins:                      "
+"                    Builtin Plugins And Filetype Options:                    "
 "============================================================================="
 " Only do this part when Vim was compiled with the +eval feature.
 if has('eval')
   " Enable file type detection.
-  " Use the default filetype settings, so that mail gets 'tw' set to 72,
-  " 'cindent' is on in C files, etc.
-  " Also load indent files, to automatically do language-dependent
-  " Revert with ":filetype off".
   filetype plugin indent on
 
   " Enable omnifunc completions
@@ -335,6 +255,9 @@ if has('eval')
   " add terminal debuggind support
   packadd! termdebug
 
+  " File explorer support
+  packadd! netrw
+
   " Setup Netrw (Ntree/Explore) if available
   if exists("g:did_load_filetypes")
     packadd! netrw
@@ -344,6 +267,9 @@ if has('eval')
     let g:netrw_winsize = 25    " set the width of Lexplore
   endif
 
+"============================================================================="
+"                                  Functions:                                 "
+"============================================================================="
   " A simple function to remove trailing whitespace
   function! ClearTrailingWhitespace()
     " save the cursor position
@@ -354,6 +280,9 @@ if has('eval')
     call setpos('.', l:cursor)
   endfunction
 
+"============================================================================="
+"                               Auto Commands:                                "
+"============================================================================="
   " Automatically call ClearTrailing Whitespace on write buffer
   autocmd BufWritePre * call ClearTrailingWhitespace()
 
@@ -370,12 +299,6 @@ if has('eval')
     autocmd!
 
     " When editing a file, always jump to the last known cursor position.
-    " Don't do it when the position is invalid, when inside an event
-    " handler (happens when dropping a file on gvim), for a commit or
-    " rebase message (likely a different one than last time), and when
-    " using xxd(1) to filter and edit binary files (it transforms input
-    " files back and forth, causing them to have dual nature, so to speak)
-    " or when running the new tutor
     autocmd BufReadPost *
       \ let line = line("'\"")
       \ | if line >= 1 && line <= line("$") && &filetype !~# 'commit'
@@ -384,83 +307,17 @@ if has('eval')
       \ |   execute "normal! g`\""
       \ | endif
 
-    " Set the default background for putty to dark. Putty usually sets the
-    " $TERM to xterm and by default it starts with a dark background which
-    " makes syntax highlighting often hard to read with bg=light
-    " undo this using:  ":au! vimStartup TermResponse"
+    " Set the default background for putty to dark.
     autocmd TermResponse *
           \ if v:termresponse == "\e[>0;136;0c" | set bg=dark | endif
   augroup END
 
-  " Quite a few people accidentally type "q:" instead of ":q" and get
-  " confused by the command line window.  Give a hint about how to get
-  " out. If you don't like this you can put this in your vimrc:
-  " ":autocmd! vimHints"
-  augroup vimHints
-    au!
-    autocmd CmdwinEnter *
-	  \ echohl Todo |
-	  \ echo gettext('Command-Line Window: Use :q to close') |
-	  \ echohl None
-  augroup END
-  " Convenient command to see the difference between the current buffer
-  " and the file it was loaded from, thus the changes you made.
-  " Only define it when not defined already.
-  " Revert with: ":delcommand DiffOrig".
-  if !exists(":DiffOrig")
-    command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis
-  		  \ | wincmd p | diffthis
-  endif
-
-  if has('langmap') && exists('+langremap')
-    " Prevent that the langmap option applies to characters that result
-    " from a mapping.
-    set nolangremap
-  endif
-
-  " Use the internal diff if available.
-  " Otherwise use the special 'diffexpr' for Windows.
-  if &diffopt !~# 'internal'
-    set diffexpr=MyDiff()
-  endif
-  function MyDiff()
-    let opt = '-a --binary '
-    if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
-    if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
-    let arg1 = v:fname_in
-    if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
-    let arg1 = substitute(arg1, '!', '\!', 'g')
-    let arg2 = v:fname_new
-    if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
-    let arg2 = substitute(arg2, '!', '\!', 'g')
-    let arg3 = v:fname_out
-    if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
-    let arg3 = substitute(arg3, '!', '\!', 'g')
-    if $VIMRUNTIME =~ ' '
-      if &sh =~ '\<cmd'
-        if empty(&shellxquote)
-          let l:shxq_sav = ''
-          set shellxquote&
-        endif
-        let cmd = '"' . $VIMRUNTIME . '\diff"'
-      else
-        let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
-      endif
-    else
-      let cmd = $VIMRUNTIME . '\diff'
-    endif
-    let cmd = substitute(cmd, '!', '\!', 'g')
-    silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3
-    if exists('l:shxq_sav')
-      let &shellxquote=l:shxq_sav
-    endif
-  endfunction
-
+"============================================================================="
+"                         Configure Undo And Backup:                          "
+"============================================================================="
   " Unix Specific Options
   if has('unix')
-    " Create directories for swap, backup, and undo files if they do not
-    " exist. This will prevent '~' and '.' files from littering your
-    " directories.
+    " Create directories for swap, backup, and undo files if they do not exist
     if !isdirectory($HOME . '\.vim\tmp')
       call mkdir($HOME . '\.vim\tmp')
     endif
@@ -474,9 +331,9 @@ if has('eval')
 
     " If "-persistent_undo" will not support undo file creation.
     if has('persistent_undo') && isdirectory($HOME . '\vimfiles\tmp')
-      set backup    " keep a backup file (restore to previous version)
+      set backup            " keep a backup file (restore to previous version)
       set backupdir=~\.vim\tmp\\
-      set undofile  " keep an undo file (undo changes after closing)
+      set undofile          " keep an undo file (undo changes after closing)
       set undodir=~\.vim\tmp\\
     else
       set nobackup
@@ -486,13 +343,10 @@ if has('eval')
 
   " Windows Specific Options
   if has('win32')
-    " Remove 't' flag from 'guioptions': no tearoff menu entries.
     set guioptions-=t
     set guioptions+=!
 
-    " Create directories for swap, backup, and undo files if they do not
-    " exist. This will prevent '~' and '.' files from littering your
-    " directories.
+    " Create directories for swap, backup, and undo files if they do not exist
     if !isdirectory($HOME . '\vimfiles\tmp')
       call mkdir($HOME . '\vimfiles\tmp')
     endif
@@ -506,39 +360,35 @@ if has('eval')
 
     " If "-persistent_undo" will not support undo file creation.
     if has('persistent_undo') && isdirectory($HOME . '\vimfiles\tmp')
-      set backup		" keep a backup file (restore to previous version)
+      set backup            " keep a backup file (restore to previous version)
       set backupdir=~\vimfiles\tmp\\
-      set undofile	" keep an undo file (undo changes after closing)
+      set undofile          " keep an undo file (undo changes after closing)
       set undodir=~\vimfiles\tmp\\
     else
       set nobackup
       set noundofile
     endif
   endif
-
-endif   " end of if 1 (compiled with +eval)
+endif " end of if 1 (compiled with +eval)
 
 "============================================================================="
 "                            Gvim GUI Options:                                "
 "============================================================================="
-" Gui Specific Options
 if has('gui_running')
-  set guioptions-=T     " Disable the toolbar
-  set guioptions-=r     " Turn off right scrollbar
-  set guioptions-=L     " Turn off left scrollbar
-  set guioptions-=h     " Turn off horizontal scrollbar
-  set guioptions+=d     " Enable dark window theme
-  set guioptions+=a     " Autoselect clipboard
-  set guioptions+=A     " autoselect plus clipboard
-  set guioptions+=g     " make inactive menu items grey
-  " Set Gui font is available
-  if has_nerd_font
-    set guifont=Hack\ Nerd\ Font\ Mono:h9.5
+  set guioptions-=T         " Disable the toolbar
+  set guioptions-=r         " Turn off right scrollbar
+  set guioptions-=L         " Turn off left scrollbar
+  set guioptions-=h         " Turn off horizontal scrollbar
+  set guioptions+=d         " Enable dark window theme
+  set guioptions+=a         " Autoselect clipboard
+  set guioptions+=A         " autoselect plus clipboard
+  set guioptions+=g         " make inactive menu items grey
+  if has_nerd_font          " use nerd font if available
+    set guifont=Hack\ Nerd\ Font\ Mono:h12
   endif
 endif
 
-" Specify the character encoding used in this script.
-scriptencoding=utf-8
+scriptencoding=utf-8        " specify character encoding for this script
 
 " EOF: Nothing below this line
 " vim: ts=2 sw=2 et

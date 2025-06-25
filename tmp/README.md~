@@ -1,4 +1,4 @@
-onfiguration - `vimrc`
+Configuration File - `vimrc`
 
 A cross-platform `.vimrc` designed for simplicity and functionality — no plugin managers or external dependencies required. This setup works out of the box on **Linux** and **Windows** (including gVim), and is ideal for users who want a clean, efficient editing environment without relying on third-party packages.
 
@@ -28,7 +28,6 @@ A cross-platform `.vimrc` designed for simplicity and functionality — no plugi
 | `set number relativenumber` | Shows both absolute and relative line numbers |
 | `set tabstop=4 shiftwidth=4 expandtab` | Consistent 4-space soft tabs |
 | `set ignorecase smartcase` | Smart case-sensitive search |
-| `set wildmenu wildmode=list:longest` | Improved command completion UI |
 | `set list listchars=...` | Highlights tabs, trailing spaces, etc. |
 | `set foldmethod=indent` | Code folding based on indentation |
 
